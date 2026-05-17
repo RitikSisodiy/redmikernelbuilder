@@ -107,7 +107,7 @@ $(grep -m 1 "SUBLEVEL" common/Makefile | awk -F= '{print $2}' | tr -d ' ')"
 
 envcheck () {
     if [[ "$DEFCONFIG" == "ndef" ]]; then
-        echo "ERROR: You didn't complete first-time setup"
+        echo "ERROR: DEFCONFIG not set"
         exit 2
     fi
 
@@ -122,19 +122,21 @@ envcheck () {
 
     echo "."
 
-    # ✅ FIX: no interactive prompt in CI
-    if [ $ISACTIONS = 1 ]; then
-        echo "CI detected: auto-accepting settings"
-    else
-        read -p "Are these settings correct? [Y/n] " answer
-        case ${answer:0:1} in
-            y|Y ) ;;
-            * )
-                echo "Go back and edit build.sh"
-                exit 1
-                ;;
-        esac
+    # ✅ NEVER fail in CI for confirmation
+    if [ "$ISACTIONS" = "1" ]; then
+        echo "CI mode detected → auto-approved"
+        return 0
     fi
+
+    # Local mode only
+    read -p "Are these settings correct? [Y/n] " answer
+    case "${answer:-y}" in
+        y|Y ) return 0 ;;
+        * )
+            echo "Aborted by user"
+            exit 1
+            ;;
+    esac
 }
 
 finalize () {
