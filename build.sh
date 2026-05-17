@@ -100,9 +100,17 @@ apply_configs() {
 patch_cgroup() {
     FILE="common/kernel/cgroup/cgroup.c"
 
-    sed -i 's/cgroup_setup_root(&cgrp_dfl_root, 0, 0)/cgroup_setup_root(&cgrp_dfl_root, CGROUP_SUBSYS_MASK, 0)/' "$FILE"
+    echo "Patching cgroup_setup_root safely..."
+
+    awk '
+    /cgroup_setup_root\(&cgrp_dfl_root, 0, 0\)/ {
+        print "BUG_ON(cgroup_setup_root(&cgrp_dfl_root, CGROUP_SUBSYS_MASK, 0));"
+        next
+    }
+    { print }
+    ' "$FILE" > tmp && mv tmp "$FILE"
+
     grep -n "cgroup_setup_root" "$FILE"
-}
 
 getsource () {
     if [ ! -d "common" ]; then
