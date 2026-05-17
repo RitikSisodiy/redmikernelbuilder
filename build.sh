@@ -98,7 +98,7 @@ apply_configs() {
     done
 }
 patch_cgroup() {
-    FILE="kernel/cgroup/cgroup.c"
+    FILE="common/kernel/cgroup/cgroup.c"
 
     # Add definition at the top (after includes)
     sed -i '1i#ifndef MY_CGROUP_SUBSYS_MASK\n#define MY_CGROUP_SUBSYS_MASK ((1 << CGROUP_SUBSYS_COUNT) - 1)\n#endif' "$FILE"
