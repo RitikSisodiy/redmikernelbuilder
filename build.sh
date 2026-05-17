@@ -1,7 +1,7 @@
 #/bin/bash
 #############################
 #      REQUIRED SETUP
-KSU=0 # set to 1 to enable KernelSU; if not leave the same
+KSU=ndef # set to 1 to enable KernelSU; if not leave the same
 
 DEFCONFIG=begonia_user_defconfig # set preferred existing defconfig in arch/arm64/configs
                # or if arch/arm64/configs does not contain it, specify 
