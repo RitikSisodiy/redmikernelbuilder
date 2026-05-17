@@ -33,7 +33,7 @@ jobs:
         echo "sfx=$(cat VERSION.txt)" >> "$GITHUB_ENV"
 
     - name: Upload updater zip
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AnyKernel3_veux-${{ env.sfx }}_${{ env.date }}
         path: ./AnyKernel3
