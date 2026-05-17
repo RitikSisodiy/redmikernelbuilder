@@ -16,6 +16,78 @@ case $HOSTNAME in
   (*) ISACTIONS=0 ;;
 esac
 
+# Extra configs
+KERNEL_CONFIGS="
+CONFIG_IPC_NS=y
+CONFIG_USER_NS=y
+CONFIG_POSIX_MQUEUE=y
+
+CONFIG_KEYS=y
+
+CONFIG_CGROUP_DEVICE=y
+CONFIG_CGROUP_PIDS=y
+CONFIG_CGROUP_PERF=y
+CONFIG_CGROUP_HUGETLB=y
+
+CONFIG_BLK_CGROUP=y
+CONFIG_BLK_DEV_THROTTLING=y
+
+CONFIG_CFS_BANDWIDTH=y
+CONFIG_NET_CLS_CGROUP=y
+CONFIG_CGROUP_NET_PRIO=y
+
+CONFIG_VETH=y
+CONFIG_DUMMY=y
+CONFIG_VXLAN=y
+CONFIG_IPVLAN=y
+CONFIG_MACVLAN=y
+
+CONFIG_BRIDGE_VLAN_FILTERING=y
+
+CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y
+CONFIG_NETFILTER_XT_MATCH_IPVS=y
+
+CONFIG_IP6_NF_NAT=y
+CONFIG_IP6_NF_TARGET_MASQUERADE=y
+
+CONFIG_NF_TABLES=y
+CONFIG_NFT_CT=y
+CONFIG_NFT_FIB=y
+CONFIG_NFT_FIB_IPV4=y
+CONFIG_NFT_FIB_IPV6=y
+CONFIG_NFT_MASQ=y
+CONFIG_NFT_NAT=y
+
+CONFIG_IP_VS=y
+CONFIG_IP_VS_NFCT=y
+CONFIG_IP_VS_PROTO_TCP=y
+CONFIG_IP_VS_PROTO_UDP=y
+CONFIG_IP_VS_RR=y
+
+CONFIG_BTRFS_FS=y
+CONFIG_BTRFS_FS_POSIX_ACL=y
+
+CONFIG_MEMCG_SWAP=y
+CONFIG_MEMCG_SWAP_ENABLED=y
+
+CONFIG_ANDROID_PARANOID_NETWORK=n
+"
+
+
+apply_configs() {
+    DEFCONFIG_PATH="common/arch/arm64/configs/$DEFCONFIG"
+
+    echo "Applying extra kernel configs..."
+
+    for cfg in $KERNEL_CONFIGS; do
+        KEY="${cfg%%=*}"
+
+        # append new value
+        echo "$cfg" >> "$DEFCONFIG_PATH"
+    done
+}
+
+
 getsource () {
     if [ ! -d "common" ]; then
         echo "============================"
@@ -24,7 +96,11 @@ getsource () {
         git clone --depth=1 $KERNEL_SOURCE -b $KBRANCH common
         set +x
     fi
+
+    apply_configs
 }
+
+
 
 gettools () {
     set -x
