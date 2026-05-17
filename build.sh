@@ -111,6 +111,7 @@ patch_cgroup() {
     ' "$FILE" > tmp && mv tmp "$FILE"
 
     grep -n "cgroup_setup_root" "$FILE"
+}
 
 getsource () {
     if [ ! -d "common" ]; then
