@@ -83,18 +83,26 @@ CONFIG_CGROUP_BPF=y
 
 
 apply_configs() {
-    DEFCONFIG_PATH="common/arch/arm64/configs/$DEFCONFIG"
+    echo "Applying kernel configs properly..."
 
-    echo "Applying extra kernel configs..."
+    DEFCONFIG_PATH="common/arch/arm64/configs/$DEFCONFIG"
 
     for cfg in $KERNEL_CONFIGS; do
         KEY="${cfg%%=*}"
+        VAL="${cfg#*=}"
 
-        # append new value
-        echo "$cfg" >> "$DEFCONFIG_PATH"
+        echo "Setting $KEY=$VAL"
+
+        ./common/scripts/config --file "$DEFCONFIG_PATH" \
+            --enable "${KEY#CONFIG_}"
     done
 }
+patch_cgroup() {
+    FILE="kernel/cgroup/cgroup.c"
 
+    sed -i 's/cgroup_setup_root(&cgrp_dfl_root, 0, 0)/cgroup_setup_root(&cgrp_dfl_root, CGROUP_SUBSYS_MASK, 0)/' "$FILE"
+    grep -n "cgroup_setup_root" "$FILE"
+}
 
 getsource () {
     if [ ! -d "common" ]; then
@@ -106,6 +114,7 @@ getsource () {
     fi
 
     apply_configs
+    patch_cgroup
 }
 
 
