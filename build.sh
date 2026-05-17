@@ -98,7 +98,7 @@ apply_configs() {
     done
 }
 patch_cgroup() {
-    FILE="kernel/cgroup/cgroup.c"
+    FILE="common/kernel/cgroup/cgroup.c"
 
     sed -i 's/cgroup_setup_root(&cgrp_dfl_root, 0, 0)/cgroup_setup_root(&cgrp_dfl_root, CGROUP_SUBSYS_MASK, 0)/' "$FILE"
     grep -n "cgroup_setup_root" "$FILE"
