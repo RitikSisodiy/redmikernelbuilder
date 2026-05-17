@@ -100,11 +100,11 @@ apply_configs() {
 patch_cgroup() {
     FILE="common/kernel/cgroup/cgroup.c"
 
-    # Add MY_CGROUP_SUBSYS_MASK definition at the top
+    # Add MY_CGROUP_SUBSYS_MASK if not present
     grep -q "MY_CGROUP_SUBSYS_MASK" "$FILE" || \
     sed -i '1i#ifndef MY_CGROUP_SUBSYS_MASK\n#define MY_CGROUP_SUBSYS_MASK ((1 << CGROUP_SUBSYS_COUNT) - 1)\n#endif' "$FILE"
 
-    # Replace old cgroup_setup_root call with the new one
+    # Replace the cgroup_setup_root call safely
     sed -i 's/BUG_ON(cgroup_setup_root(&cgrp_dfl_root, 0, 0))/BUG_ON(cgroup_setup_root(&cgrp_dfl_root, MY_CGROUP_SUBSYS_MASK, 0))/' "$FILE"
 }
 
